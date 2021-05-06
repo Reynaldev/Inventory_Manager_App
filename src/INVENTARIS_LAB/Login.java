@@ -48,7 +48,7 @@ public class Login extends javax.swing.JFrame {
         txtPassword = new javax.swing.JPasswordField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("Aplikasi Inventaris Lab");
+        setTitle("Inventaris Lab App");
         setBackground(new java.awt.Color(204, 204, 204));
         setFont(new java.awt.Font("Arial", 1, 14)); // NOI18N
         setMinimumSize(null);
@@ -163,8 +163,8 @@ public class Login extends javax.swing.JFrame {
 
     private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
         // TODO add your handling code here:
-        String user = ("admin");
-        String pass = ("admin");
+        String user = ("Admin");
+        String pass = ("Admin123");
         
         String username = txtUsername.getText();
         String password = txtPassword.getText();
