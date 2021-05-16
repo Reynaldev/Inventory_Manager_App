@@ -22,6 +22,7 @@ import java.sql.PreparedStatement;
  */
 public class Inventaris_Barang extends javax.swing.JFrame {
     
+    // Declaring variable to make a connection with Database
     private Connection con;
     private Statement stat;
     private ResultSet res;
@@ -35,6 +36,7 @@ public class Inventaris_Barang extends javax.swing.JFrame {
         tabelMasuk();
         tabelKeluar();
         
+        // Make the app position to the center of the screen when running
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         Dimension frameSize = getSize();
         setLocation(
@@ -43,6 +45,7 @@ public class Inventaris_Barang extends javax.swing.JFrame {
         );
     }
     
+    // Light Theme
     private void light() {
         jmbInv.setBackground(new java.awt.Color(255, 255, 255));
         itemExit.setBackground(new java.awt.Color(255, 255, 255));
@@ -62,6 +65,7 @@ public class Inventaris_Barang extends javax.swing.JFrame {
         jLabel8.setForeground(new java.awt.Color(0, 0, 0));
     }
     
+    // Dark Theme
     private void dark() {
         jmbInv.setBackground(new java.awt.Color(35, 39, 42));
         itemExit.setBackground(new java.awt.Color(35, 39, 42));
@@ -81,11 +85,13 @@ public class Inventaris_Barang extends javax.swing.JFrame {
         jLabel8.setForeground(new java.awt.Color(255, 255, 255));
     }
     
+    // Method to refresh the app
     private void refresh() {
         new Inventaris_Barang().setVisible(true);
         dispose();
     }
     
+    // Method to connect to database
     private void koneksi() {
         try {
             Class.forName("com.mysql.jdbc.Driver");
@@ -96,6 +102,7 @@ public class Inventaris_Barang extends javax.swing.JFrame {
         }
     }
     
+    // Method to empty the value
     private void kosongkan() {
         txtKodeBarang.setText(null);
         txtNamaBarang.setText(null);
@@ -107,8 +114,13 @@ public class Inventaris_Barang extends javax.swing.JFrame {
         txtKodeBarang.requestFocus();
     }
     
+    // Make the inventory input table
     private void tabelMasuk() {
+        
+        // Create the table
         DefaultTableModel t = new DefaultTableModel();
+        
+        // Set table column
         t.addColumn("Kode Barang");
         t.addColumn("Nama Barang");
         t.addColumn("Tanggal Masuk");
@@ -116,6 +128,7 @@ public class Inventaris_Barang extends javax.swing.JFrame {
         t.addColumn("Kondisi");
         tblMasuk.setModel(t);
         
+        // Get data from table
         try {
             res = stat.executeQuery("SELECT * FROM inventaris_barang_masuk");
             while (res.next()) {
@@ -127,12 +140,16 @@ public class Inventaris_Barang extends javax.swing.JFrame {
                     res.getString("Kondisi")
                 });
             }
-        } catch (Exception e) {
+        } catch (Exception e) { // if contain error
             JOptionPane.showMessageDialog(rootPane, e);
         }
     }
     
+    
+    // Make the inventory output table
     private void tabelKeluar() {
+        
+        // Same as the inventory input table
         DefaultTableModel t = new DefaultTableModel();
         t.addColumn("Kode Barang");
         t.addColumn("Nama Barang");
@@ -142,6 +159,7 @@ public class Inventaris_Barang extends javax.swing.JFrame {
         t.addColumn("Kondisi");
         tblKeluar.setModel(t);
         
+        // Get data from table
         try {
             res = stat.executeQuery("SELECT * FROM inventaris_barang_keluar");
             while (res.next()) {
@@ -159,6 +177,7 @@ public class Inventaris_Barang extends javax.swing.JFrame {
         }
     }
     
+    // Make a loop to send the data to inventory input table
     private void tblMasuk() {
         int a = 100;
         Object[][] data = new Object[a][8];
@@ -189,6 +208,8 @@ public class Inventaris_Barang extends javax.swing.JFrame {
         }
     }
     
+    // Same as above
+    // Make a loop to send the data to inventory input table
     private void tblKeluar() {
         int a = 100;
         Object[][] data = new Object[a][8];
@@ -698,7 +719,9 @@ public class Inventaris_Barang extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
+    
+    // Inventory Output table
+    // Highlight the data from Inventory Output table if the table row is clicked
     private void tblKeluarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblKeluarMouseClicked
         // TODO add your handling code here:
         int i = tblKeluar.getSelectedRow();
@@ -722,25 +745,34 @@ public class Inventaris_Barang extends javax.swing.JFrame {
         cmbKondisi.setSelectedItem(code5);
     }//GEN-LAST:event_tblKeluarMouseClicked
 
+    // Inventory Output Delete Button
     private void btnHapusKeluarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHapusKeluarActionPerformed
         // TODO add your handling code here:
+        
+        // Confirmation Dialog
         int ok = JOptionPane.showConfirmDialog(null, "Apakah anda yakin untuk menghapus data ini?",
             "Confirmation", JOptionPane.YES_NO_OPTION);
+        
+        // Try to delete the table row based on 'Kode_barang'
         try {
             stat.executeUpdate("DELETE FROM inventaris_barang_keluar WHERE Kode_barang='"
                 + txtKodeBarang.getText() + "'");
-
-            kosongkan();
-            JOptionPane.showMessageDialog(null, "Data berhasil dihapus");
             
+            // Empty the value
+            kosongkan();
+            JOptionPane.showMessageDialog(null, "Data berhasil dihapus"); // Return a Message
+            
+            // Refresh the App
             refresh();
-        } catch (Exception e) {
+        } catch (Exception e) { // If failed to delete the data
             JOptionPane.showMessageDialog(null, "Terjadi kesalahan : " + e);
         }
     }//GEN-LAST:event_btnHapusKeluarActionPerformed
-
+    
+    // Inventory Output Add Button
     private void btnTambahKeluarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTambahKeluarActionPerformed
         // TODO add your handling code here:
+        // Try to input the data to Inventory Output table
         try {
             stat.executeUpdate("INSERT INTO inventaris_barang_keluar VALUES ("
                 + "'" + txtKodeBarang.getText() + "',"
@@ -751,20 +783,25 @@ public class Inventaris_Barang extends javax.swing.JFrame {
                 + "'" + cmbKondisi.getSelectedItem() + "')"
             );
             
+            // Delete the data from Inventory Input table
             stat.executeUpdate("DELETE FROM inventaris_barang_masuk where Kode_barang='"
                 + txtKodeBarang.getText() + "'");
-
+            
+            // Get the table object
             this.tblMasuk();
             this.tblKeluar();
             kosongkan();
-            JOptionPane.showMessageDialog(null, "Data berhasil dikeluarkan");
+            JOptionPane.showMessageDialog(null, "Data berhasil dikeluarkan"); // Return a Message
             
+            // Refresh the App
             refresh();
-        } catch (Exception e) {
+        } catch (Exception e) { // If failed to input the data
             JOptionPane.showMessageDialog(null, "Terjadi kesalahan : " + e);
         }
     }//GEN-LAST:event_btnTambahKeluarActionPerformed
-
+    
+    // Inventory Input table
+    // Highlight the data from Inventory Input table if the table row is clicked
     private void tblMasukMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblMasukMouseClicked
         // TODO add your handling code here:
         int i = tblMasuk.getSelectedRow();
@@ -785,25 +822,31 @@ public class Inventaris_Barang extends javax.swing.JFrame {
         txtJumlah.setText(code3);
         cmbKondisi.setSelectedItem(code4);
     }//GEN-LAST:event_tblMasukMouseClicked
-
+    
+    // Inventory Input Delete Button
     private void btnHapusMasukActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHapusMasukActionPerformed
         // TODO add your handling code here:
+        // Confirmation Dialog
         int ok = JOptionPane.showConfirmDialog(null, "Apakah anda yakin untuk menghapus data ini?",
             "Confirmation", JOptionPane.YES_NO_OPTION);
-
+        
+        // Try to delete from Inventory Input table
         try {
             stat.executeUpdate("DELETE FROM inventaris_barang_masuk where Kode_barang='"
                 + txtKodeBarang.getText() + "'");
-
-            kosongkan();
-            JOptionPane.showMessageDialog(null, "Data berhasil dihapus");
             
+            // Empty the value
+            kosongkan();
+            JOptionPane.showMessageDialog(null, "Data berhasil dihapus"); // Return a Message
+            
+            // Refresh the App
             refresh();
-        } catch (Exception e) {
+        } catch (Exception e) { // If failed to delete the data
             JOptionPane.showMessageDialog(null, "Terjadi kesalahan : " + e);
         }
     }//GEN-LAST:event_btnHapusMasukActionPerformed
-
+    
+    // Inventory Input Add Button
     private void btnTambahMasukActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTambahMasukActionPerformed
         // TODO add your handling code here:
         try {
@@ -823,13 +866,15 @@ public class Inventaris_Barang extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Terjadi kesalahan : " + e);
         }
     }//GEN-LAST:event_btnTambahMasukActionPerformed
-
+    
+    // Get the data based on 'Kode_barang'
     private void txtKodeBarangActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtKodeBarangActionPerformed
         // TODO add your handling code here:
         try {
             res = stat.executeQuery("SELECT * FROM inventaris_barang_masuk WHERE Kode_barang='"
                 + txtKodeBarang.getText() + "'");
-
+            
+            // Get data row
             while (res.next()) {
                 txtNamaBarang.setText(res.getString("Nama_barang"));
                 txtTglMasuk.setText(res.getString("Tanggal_masuk"));
@@ -840,18 +885,21 @@ public class Inventaris_Barang extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(rootPane, e);
         }
     }//GEN-LAST:event_txtKodeBarangActionPerformed
-
+    
+    // Clear Button
     private void btnClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClearActionPerformed
         // TODO add your handling code here:
         kosongkan();
     }//GEN-LAST:event_btnClearActionPerformed
-
+    
+    // Search Button
     private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
         // TODO add your handling code here:
         try {
             res = stat.executeQuery("SELECT * FROM inventaris_barang_masuk WHERE Kode_barang='"
                 + txtKodeBarang.getText() + "'");
-
+            
+            // Get the data row
             while (res.next()) {
                 txtNamaBarang.setText(res.getString("Nama_barang"));
                 txtTglMasuk.setText(res.getString("Tanggal_masuk"));
@@ -862,16 +910,21 @@ public class Inventaris_Barang extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(rootPane, e);
         }
     }//GEN-LAST:event_btnSearchActionPerformed
-
+    
+    // Refresh Button
     private void btnRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRefreshActionPerformed
         // TODO add your handling code here:
         refresh();
     }//GEN-LAST:event_btnRefreshActionPerformed
-
+    
+    // Update Button
     private void btnUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateActionPerformed
         // TODO add your handling code here:
+        // Confirmation Dialog
         int ok = JOptionPane.showConfirmDialog(null, "Apakah anda yakin untuk update data ini?",
             "Confirmation", JOptionPane.YES_NO_OPTION);
+        
+        // Try to update the data based on 'Kode_barang'
         try {
             String sql = "UPDATE inventaris_barang_masuk SET "
             + "Kode_barang=?,"
@@ -881,23 +934,31 @@ public class Inventaris_Barang extends javax.swing.JFrame {
             + "Kondisi=? "
             + "WHERE Kode_barang='"
             + txtKodeBarang.getText() + "'";
-
+            
+            // Connect to database
             PreparedStatement ps = con.prepareStatement(sql);
-
+            
+            // Update the data
             if (ok == 0) {
+                
+                // Try to Insert the Data
                 try {
                     ps.setString(1, txtKodeBarang.getText());
                     ps.setString(2, txtNamaBarang.getText());
                     ps.setString(3, txtTglMasuk.getText());
                     ps.setString(4, txtJumlah.getText());
                     ps.setString(5, (String) cmbKondisi.getSelectedItem());
+                    
+                    // Do update
                     ps.executeUpdate();
-                    JOptionPane.showMessageDialog(null, "Update data berhasil");
+                    JOptionPane.showMessageDialog(null, "Update data berhasil"); // Return a Message
                     
+                    // Refresh the App
                     refresh();
-                } catch (Exception e) {
-                    JOptionPane.showMessageDialog(null, "Update gagal");
+                } catch (Exception e) { // If failed to update
+                    JOptionPane.showMessageDialog(null, "Update gagal"); // Return a Message
                     
+                    // Refresh the App
                     refresh();
                 }
             }
@@ -906,25 +967,30 @@ public class Inventaris_Barang extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnUpdateActionPerformed
 
+    // Exit Item
     private void itemExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemExitActionPerformed
         // TODO add your handling code here:
+        // If user wants to exit
         int ok = JOptionPane.showConfirmDialog(null, "Anda yakin ingin keluar?",
             "Confirmation", JOptionPane.YES_NO_OPTION);
-
-        if (ok == 0) {
+        
+        if (ok == 0) { // If True
             System.exit(0);
         }
     }//GEN-LAST:event_itemExitActionPerformed
 
+    // Theme Button
     private void btnSetThemeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSetThemeActionPerformed
         // TODO add your handling code here:
-        if (btnSetTheme.isSelected()) {
-            dark();
+        if (btnSetTheme.isSelected()) { // If the button turned ON
+            dark(); // Set to Dark Theme
             
+            // Change the Buttons Icon
             btnSetTheme.setIcon(new javax.swing.ImageIcon(getClass().getResource("/INVENTARIS_LAB_IMAGE/outline_dark_mode_black_18.png")));
-        } else {
-            light();
+        } else { // If the button turned OFF
+            light(); // Set to Light Theme
             
+            // Change the Buttons Icon
             btnSetTheme.setIcon(new javax.swing.ImageIcon(getClass().getResource("/INVENTARIS_LAB_IMAGE/outline_light_mode_black_18.png")));
         }
     }//GEN-LAST:event_btnSetThemeActionPerformed
