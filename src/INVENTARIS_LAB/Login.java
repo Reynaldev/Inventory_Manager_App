@@ -146,34 +146,41 @@ public class Login extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
+    
+    // Username TextField
     private void txtUsernameKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtUsernameKeyPressed
         // TODO add your handling code here:
-        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) { // If user press ENTER
             btnLoginActionPerformed(new ActionEvent(evt.getSource(), evt.getID(), "Search KeyPress"));
         }
     }//GEN-LAST:event_txtUsernameKeyPressed
 
     private void txtPasswordKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtPasswordKeyPressed
         // TODO add your handling code here:
-        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) { // If user press ENTER
             btnLoginActionPerformed(new ActionEvent(evt.getSource(), evt.getID(), "Login KeyPress"));
         }
     }//GEN-LAST:event_txtPasswordKeyPressed
-
+    
+    // Login Button
     private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
         // TODO add your handling code here:
-        String user = ("Admin");
-        String pass = ("Admin123");
+        String user = ("Admin"); // Set Username
+        String pass = ("Admin123"); // Set Password
         
+        // Declare variables for Username and Password
         String username = txtUsername.getText();
         String password = txtPassword.getText();
         
+        //Check if the input of username and password are same 
         if (username.equals(user) && password.equals(pass)) {
-            this.setVisible(false);
-            new Inventaris_Barang().setVisible(true);
-        } else {
+            this.setVisible(false); // hide this window
+            new Inventaris_Barang().setVisible(true); // Call the main window
+        } else { // If the Username and Password are incorrect
+            // Return a Message
             JOptionPane.showMessageDialog(null, "Incorrect username or password\n");
+            
+            // Empty the value
             txtUsername.setText(null);
             txtPassword.setText(null);
         }

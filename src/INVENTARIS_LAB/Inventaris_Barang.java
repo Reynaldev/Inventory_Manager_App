@@ -102,18 +102,6 @@ public class Inventaris_Barang extends javax.swing.JFrame {
         }
     }
     
-    // Method to empty the value
-    private void kosongkan() {
-        txtKodeBarang.setText(null);
-        txtNamaBarang.setText(null);
-        txtTglMasuk.setText(null);
-        txtTglKeluar.setText(null);
-        txtJumlah.setText(null);
-        cmbKondisi.setSelectedIndex(-1);
-        
-        txtKodeBarang.requestFocus();
-    }
-    
     // Make the inventory input table
     private void tabelMasuk() {
         
@@ -241,6 +229,86 @@ public class Inventaris_Barang extends javax.swing.JFrame {
             System.out.println("Gagal tampil : " + e.toString());
         }
     }
+    
+    // Search data by 'Kode_barang'
+    public void search() {
+        // Try to get the data from 'Kode_barang'
+        try {
+            res = stat.executeQuery("SELECT * FROM inventaris_barang_masuk WHERE Kode_barang='"
+                + txtKodeBarang.getText() + "'");
+            
+            // Get the data row
+            while (res.next()) {
+                txtNamaBarang.setText(res.getString("Nama_barang"));
+                txtTglMasuk.setText(res.getString("Tanggal_masuk"));
+                txtJumlah.setText(res.getString("Jumlah"));
+                cmbKondisi.setSelectedItem(res.getString("Kondisi"));
+            }
+        } catch (Exception e) { // If failed
+            JOptionPane.showMessageDialog(rootPane, e);
+        }
+    }
+    
+    // Update selected data
+    public void update() {
+        // Confirmation Dialog
+        int ok = JOptionPane.showConfirmDialog(null, "Apakah anda yakin untuk update data ini?",
+            "Confirmation", JOptionPane.YES_NO_OPTION);
+        
+        // Try to update the data based on 'Kode_barang'
+        try {
+            String sql = "UPDATE inventaris_barang_masuk SET "
+            + "Kode_barang=?,"
+            + "Nama_barang=?,"
+            + "Tanggal_masuk=?,"
+            + "Jumlah=?,"
+            + "Kondisi=? "
+            + "WHERE Kode_barang='"
+            + txtKodeBarang.getText() + "'";
+            
+            // Connect to database
+            PreparedStatement ps = con.prepareStatement(sql);
+            
+            // Update the data
+            if (ok == 0) {
+                
+                // Try to Insert the Data
+                try {
+                    ps.setString(1, txtKodeBarang.getText());
+                    ps.setString(2, txtNamaBarang.getText());
+                    ps.setString(3, txtTglMasuk.getText());
+                    ps.setString(4, txtJumlah.getText());
+                    ps.setString(5, (String) cmbKondisi.getSelectedItem());
+                    
+                    // Do update
+                    ps.executeUpdate();
+                    JOptionPane.showMessageDialog(null, "Update data berhasil"); // Return a Message
+                    
+                    // Refresh the App
+                    refresh();
+                } catch (Exception e) { // If failed to update
+                    JOptionPane.showMessageDialog(null, "Update gagal"); // Return a Message
+                    
+                    // Refresh the App
+                    refresh();
+                }
+            }
+        } catch (Exception e) {
+
+        }
+    }
+    
+    // Method to empty the value
+    private void clear() {
+        txtKodeBarang.setText(null);
+        txtNamaBarang.setText(null);
+        txtTglMasuk.setText(null);
+        txtTglKeluar.setText(null);
+        txtJumlah.setText(null);
+        cmbKondisi.setSelectedIndex(-1);
+        
+        txtKodeBarang.requestFocus();
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -284,7 +352,15 @@ public class Inventaris_Barang extends javax.swing.JFrame {
         tblKeluar = new javax.swing.JTable();
         jmbInv = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
+        itemRefresh = new javax.swing.JMenuItem();
+        jSeparator1 = new javax.swing.JPopupMenu.Separator();
         itemExit = new javax.swing.JMenuItem();
+        jMenu3 = new javax.swing.JMenu();
+        itemSearch = new javax.swing.JMenuItem();
+        itemUpdate = new javax.swing.JMenuItem();
+        itemClear = new javax.swing.JMenuItem();
+        jMenu2 = new javax.swing.JMenu();
+        itemAbout = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Inventaris Lab App");
@@ -690,6 +766,19 @@ public class Inventaris_Barang extends javax.swing.JFrame {
         jMenu1.setText("File");
         jMenu1.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
 
+        itemRefresh.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_R, java.awt.event.InputEvent.CTRL_MASK));
+        itemRefresh.setBackground(new java.awt.Color(255, 255, 255));
+        itemRefresh.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        itemRefresh.setForeground(new java.awt.Color(0, 0, 0));
+        itemRefresh.setText("Refresh");
+        itemRefresh.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                itemRefreshActionPerformed(evt);
+            }
+        });
+        jMenu1.add(itemRefresh);
+        jMenu1.add(jSeparator1);
+
         itemExit.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_E, java.awt.event.InputEvent.ALT_MASK | java.awt.event.InputEvent.CTRL_MASK));
         itemExit.setBackground(new java.awt.Color(255, 255, 255));
         itemExit.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
@@ -703,6 +792,68 @@ public class Inventaris_Barang extends javax.swing.JFrame {
         jMenu1.add(itemExit);
 
         jmbInv.add(jMenu1);
+
+        jMenu3.setBackground(new java.awt.Color(255, 255, 255));
+        jMenu3.setForeground(new java.awt.Color(0, 0, 0));
+        jMenu3.setText("Edit");
+        jMenu3.setToolTipText("");
+        jMenu3.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+
+        itemSearch.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F, java.awt.event.InputEvent.CTRL_MASK));
+        itemSearch.setBackground(new java.awt.Color(255, 255, 255));
+        itemSearch.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        itemSearch.setForeground(new java.awt.Color(0, 0, 0));
+        itemSearch.setText("Search");
+        itemSearch.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                itemSearchActionPerformed(evt);
+            }
+        });
+        jMenu3.add(itemSearch);
+
+        itemUpdate.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_U, java.awt.event.InputEvent.CTRL_MASK));
+        itemUpdate.setBackground(new java.awt.Color(255, 255, 255));
+        itemUpdate.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        itemUpdate.setForeground(new java.awt.Color(0, 0, 0));
+        itemUpdate.setText("Update");
+        itemUpdate.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                itemUpdateActionPerformed(evt);
+            }
+        });
+        jMenu3.add(itemUpdate);
+
+        itemClear.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_D, java.awt.event.InputEvent.CTRL_MASK));
+        itemClear.setBackground(new java.awt.Color(255, 255, 255));
+        itemClear.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        itemClear.setForeground(new java.awt.Color(0, 0, 0));
+        itemClear.setText("Clear");
+        itemClear.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                itemClearActionPerformed(evt);
+            }
+        });
+        jMenu3.add(itemClear);
+
+        jmbInv.add(jMenu3);
+
+        jMenu2.setBackground(new java.awt.Color(255, 255, 255));
+        jMenu2.setForeground(new java.awt.Color(0, 0, 0));
+        jMenu2.setText("Help");
+        jMenu2.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+
+        itemAbout.setBackground(new java.awt.Color(255, 255, 255));
+        itemAbout.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
+        itemAbout.setForeground(new java.awt.Color(0, 0, 0));
+        itemAbout.setText("About");
+        itemAbout.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                itemAboutActionPerformed(evt);
+            }
+        });
+        jMenu2.add(itemAbout);
+
+        jmbInv.add(jMenu2);
 
         setJMenuBar(jmbInv);
 
@@ -759,7 +910,7 @@ public class Inventaris_Barang extends javax.swing.JFrame {
                 + txtKodeBarang.getText() + "'");
             
             // Empty the value
-            kosongkan();
+            clear();
             JOptionPane.showMessageDialog(null, "Data berhasil dihapus"); // Return a Message
             
             // Refresh the App
@@ -790,7 +941,7 @@ public class Inventaris_Barang extends javax.swing.JFrame {
             // Get the table object
             this.tblMasuk();
             this.tblKeluar();
-            kosongkan();
+            clear();
             JOptionPane.showMessageDialog(null, "Data berhasil dikeluarkan"); // Return a Message
             
             // Refresh the App
@@ -836,7 +987,7 @@ public class Inventaris_Barang extends javax.swing.JFrame {
                 + txtKodeBarang.getText() + "'");
             
             // Empty the value
-            kosongkan();
+            clear();
             JOptionPane.showMessageDialog(null, "Data berhasil dihapus"); // Return a Message
             
             // Refresh the App
@@ -858,7 +1009,7 @@ public class Inventaris_Barang extends javax.swing.JFrame {
                 + "'" + cmbKondisi.getSelectedItem() + "')"
             );
 
-            kosongkan();
+            clear();
             JOptionPane.showMessageDialog(null, "Berhasil menyimpan data");
             
             refresh();
@@ -889,26 +1040,13 @@ public class Inventaris_Barang extends javax.swing.JFrame {
     // Clear Button
     private void btnClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClearActionPerformed
         // TODO add your handling code here:
-        kosongkan();
+        clear();
     }//GEN-LAST:event_btnClearActionPerformed
     
     // Search Button
     private void btnSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSearchActionPerformed
         // TODO add your handling code here:
-        try {
-            res = stat.executeQuery("SELECT * FROM inventaris_barang_masuk WHERE Kode_barang='"
-                + txtKodeBarang.getText() + "'");
-            
-            // Get the data row
-            while (res.next()) {
-                txtNamaBarang.setText(res.getString("Nama_barang"));
-                txtTglMasuk.setText(res.getString("Tanggal_masuk"));
-                txtJumlah.setText(res.getString("Jumlah"));
-                cmbKondisi.setSelectedItem(res.getString("Kondisi"));
-            }
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(rootPane, e);
-        }
+        search();
     }//GEN-LAST:event_btnSearchActionPerformed
     
     // Refresh Button
@@ -920,57 +1058,13 @@ public class Inventaris_Barang extends javax.swing.JFrame {
     // Update Button
     private void btnUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateActionPerformed
         // TODO add your handling code here:
-        // Confirmation Dialog
-        int ok = JOptionPane.showConfirmDialog(null, "Apakah anda yakin untuk update data ini?",
-            "Confirmation", JOptionPane.YES_NO_OPTION);
-        
-        // Try to update the data based on 'Kode_barang'
-        try {
-            String sql = "UPDATE inventaris_barang_masuk SET "
-            + "Kode_barang=?,"
-            + "Nama_barang=?,"
-            + "Tanggal_masuk=?,"
-            + "Jumlah=?,"
-            + "Kondisi=? "
-            + "WHERE Kode_barang='"
-            + txtKodeBarang.getText() + "'";
-            
-            // Connect to database
-            PreparedStatement ps = con.prepareStatement(sql);
-            
-            // Update the data
-            if (ok == 0) {
-                
-                // Try to Insert the Data
-                try {
-                    ps.setString(1, txtKodeBarang.getText());
-                    ps.setString(2, txtNamaBarang.getText());
-                    ps.setString(3, txtTglMasuk.getText());
-                    ps.setString(4, txtJumlah.getText());
-                    ps.setString(5, (String) cmbKondisi.getSelectedItem());
-                    
-                    // Do update
-                    ps.executeUpdate();
-                    JOptionPane.showMessageDialog(null, "Update data berhasil"); // Return a Message
-                    
-                    // Refresh the App
-                    refresh();
-                } catch (Exception e) { // If failed to update
-                    JOptionPane.showMessageDialog(null, "Update gagal"); // Return a Message
-                    
-                    // Refresh the App
-                    refresh();
-                }
-            }
-        } catch (Exception e) {
-
-        }
+        update();
     }//GEN-LAST:event_btnUpdateActionPerformed
 
     // Exit Item
     private void itemExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemExitActionPerformed
         // TODO add your handling code here:
-        // If user wants to exit
+        // If user want to exit
         int ok = JOptionPane.showConfirmDialog(null, "Anda yakin ingin keluar?",
             "Confirmation", JOptionPane.YES_NO_OPTION);
         
@@ -985,15 +1079,46 @@ public class Inventaris_Barang extends javax.swing.JFrame {
         if (btnSetTheme.isSelected()) { // If the button turned ON
             dark(); // Set to Dark Theme
             
-            // Change the Buttons Icon
+            // Change the Button Icon
             btnSetTheme.setIcon(new javax.swing.ImageIcon(getClass().getResource("/INVENTARIS_LAB_IMAGE/outline_dark_mode_black_18.png")));
         } else { // If the button turned OFF
             light(); // Set to Light Theme
             
-            // Change the Buttons Icon
+            // Change the Button Icon
             btnSetTheme.setIcon(new javax.swing.ImageIcon(getClass().getResource("/INVENTARIS_LAB_IMAGE/outline_light_mode_black_18.png")));
         }
     }//GEN-LAST:event_btnSetThemeActionPerformed
+
+    // Item About
+    private void itemAboutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemAboutActionPerformed
+        // TODO add your handling code here:
+        JOptionPane.showMessageDialog(null, "Made by ReynaldyNC\n\n©ReynaldyNC. 2021",
+                "About", JOptionPane.INFORMATION_MESSAGE);
+    }//GEN-LAST:event_itemAboutActionPerformed
+
+    // Item Refresh
+    private void itemRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemRefreshActionPerformed
+        // TODO add your handling code here:
+        refresh();
+    }//GEN-LAST:event_itemRefreshActionPerformed
+
+    // Item Search
+    private void itemSearchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemSearchActionPerformed
+        // TODO add your handling code here:
+        search();
+    }//GEN-LAST:event_itemSearchActionPerformed
+
+    // Item Update
+    private void itemUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemUpdateActionPerformed
+        // TODO add your handling code here:
+        update();
+    }//GEN-LAST:event_itemUpdateActionPerformed
+
+    // Item Clear
+    private void itemClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_itemClearActionPerformed
+        // TODO add your handling code here:
+        clear();
+    }//GEN-LAST:event_itemClearActionPerformed
 
     /**
      * @param args the command line arguments
@@ -1023,10 +1148,8 @@ public class Inventaris_Barang extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new Inventaris_Barang().setVisible(true);
-            }
+        java.awt.EventQueue.invokeLater(() -> {
+            new Inventaris_Barang().setVisible(true);
         });
     }
 
@@ -1041,7 +1164,12 @@ public class Inventaris_Barang extends javax.swing.JFrame {
     private javax.swing.JButton btnTambahMasuk;
     private javax.swing.JButton btnUpdate;
     private javax.swing.JComboBox<String> cmbKondisi;
+    private javax.swing.JMenuItem itemAbout;
+    private javax.swing.JMenuItem itemClear;
     private javax.swing.JMenuItem itemExit;
+    private javax.swing.JMenuItem itemRefresh;
+    private javax.swing.JMenuItem itemSearch;
+    private javax.swing.JMenuItem itemUpdate;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -1051,8 +1179,11 @@ public class Inventaris_Barang extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenu jMenu2;
+    private javax.swing.JMenu jMenu3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JMenuBar jmbInv;
     private javax.swing.JPanel jpInv1;
     private javax.swing.JPanel jpInv2;
