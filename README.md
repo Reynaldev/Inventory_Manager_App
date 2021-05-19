@@ -1,4 +1,4 @@
-## Details
+## About This Repository
 Database CRUD Project build with Java
 
 ## Installation
